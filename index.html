@@ -702,21 +702,22 @@
   function filter(v,btn){cf=v;showAll=false;document.querySelectorAll('.fb').forEach(b=>b.classList.remove('active'));btn.classList.add('active');render();}
   render();
 
-  // Auto-fetch correct posters from TMDB API
-  const tmdbMovies = [
-    {id:'bhabhaba', tmdbId:1256006},
-    {id:'jsk',      tmdbId:1044944},
-    {id:'35ckk',    tmdbId:1196995},
-    {id:'pavi',     tmdbId:1081319},
+  // Auto-fetch correct posters using verified IMDb IDs via TMDB find API
+  const posterMovies = [
+    {id:'bhabhaba', imdbId:'tt28551273'},
+    {id:'jsk',      imdbId:'tt23458804'},
+    {id:'35ckk',    imdbId:'tt32750432'},
+    {id:'pavi',     imdbId:'tt27369385'},
   ];
   const TMDB_KEY = '8265bd1679663a7ea12ac168da84d2e8';
-  tmdbMovies.forEach(m => {
-    fetch(`https://api.themoviedb.org/3/movie/${m.tmdbId}?api_key=${TMDB_KEY}`)
+  posterMovies.forEach(m => {
+    fetch(`https://api.themoviedb.org/3/find/${m.imdbId}?api_key=${TMDB_KEY}&external_source=imdb_id`)
       .then(r => r.json())
       .then(data => {
-        if (data.poster_path) {
+        const results = data.movie_results;
+        if (results && results.length > 0 && results[0].poster_path) {
           const img = document.getElementById(`poster-${m.id}`);
-          if (img) img.src = `https://image.tmdb.org/t/p/w500${data.poster_path}`;
+          if (img) img.src = `https://image.tmdb.org/t/p/w500${results[0].poster_path}`;
         }
       })
       .catch(() => {});
